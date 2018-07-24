@@ -35,7 +35,7 @@ for i in df.Attribute:
         mean_percent = mean(arr_percent)
         
         #if (deviation from 7 days earlier) and (large enough data) -> compare to mean and stdev/mark if deviates
-        #can make this test mark more to be safe (leave to manual review); 
+        #can make this test mark more to be safe (leave to manual review)
         c = i - 4
         while (c < i - 1):
             if ((df.Utilized_Total.iloc[c] < .75 * df.Utilized_Total.iloc[c - 7]) and (df.Utilized_Total.iloc[c] > 1.25 * df.Utilized_Total.iloc[c - 7]) and (mean_total > 10000)):
