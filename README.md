@@ -5,7 +5,7 @@ import pandas as pd
 from statistics import mean
 
 # Reading in table from Excel
-# Excel table must have correct column titles (_______________)
+# Excel table must have correct column titles (Attribute, Utilized_Total, and Utilized_Percent or modify code)
 df = pd.read_excel(r"C:\Users\Ben\Documents\intentiq_example.xls", index_col = None)
 
 # Storing row and column lengths
@@ -16,21 +16,21 @@ col_count = df.shape[1]
 new_array = np.array([0, 0])
 new_array.resize(row_count, 1)
 
-# Looping thru attribute column
-j = df.Attribute[1]
+# Looping through Attribute column
+j = 1
 for i in range(1, len(df.Attribute) - 1):
     if df.Attribute.iloc[i] != df.Attribute.iloc[i - 1]:        
-        arr_total = np.array()
+        arr_total = np.array([0])
         a = j
-        while (a < i - 4):
-            arr.append(df.Utilized_Total.iloc[a])
+        while (a < (i - 4)):
+            np.append(arr_total, df.Utilized_Total.iloc[a])
             a += 1        
         mean_total = mean(arr_total)
         
         arr_percent = np.array([0])
         b = j
-        while (b < i - 4):
-            arr.append(df.Utilized_Percent.iloc[b])
+        while (b < (i - 4)):
+            np.append(arr_percent, df.Utilized_Percent.iloc[b])
             b += 1        
         mean_percent = mean(arr_percent)
         
