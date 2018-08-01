@@ -19,8 +19,7 @@ new_array.resize(row_count, 1)
 # Looping through Attribute column
 j = 1
 for i in range(1, len(df.Attribute) - 1):
-    if df.Attribute.iloc[i] != df.Attribute.iloc[i - 1]:
-        
+    if df.Attribute.iloc[i] != df.Attribute.iloc[i - 1]:        
         if i - j < 4:  #change 4 to 10 or 11 bc compaing to 7 days ago?
             j = i
 
@@ -36,8 +35,8 @@ for i in range(1, len(df.Attribute) - 1):
                 x += 1
 
             if mean(arr_total) > 5000:
-                n = len(arr_total) - 1
-                for m in range(0, n):
+#                 n = len(arr_total) - 1
+                for m in range(0, len(arr_total) - 1): #while loop??
                     if arr_total[m] == 0:
                         arr_total = np.delete(arr_total, (m))
                           
@@ -72,17 +71,19 @@ for i in range(1, len(df.Attribute) - 1):
                 if ((df.Utilized_Total.iloc[c] < .75 * df.Utilized_Total.iloc[c - 7]) and (df.Utilized_Total.iloc[c] > 1.25 * df.Utilized_Total.iloc[c - 7]) and (mean_total > 10000)):
                     if ((df.Utilized_Total.iloc[c] < .75 * mean_total) or (df.Utilized_Total.iloc[c] > 1.25 * mean_total) or (df.Utilized_Total.iloc[c] == "-")):
                         new_array[c] = "Check this"
+                c += 1
 
             d = i - 4
             while (d < i - 1):
                 if ((df.Utilized_Percent.iloc[d] < .67 * df.Utilized_Percent.iloc[d - 7]) and (df.Utilized_Percent.iloc[d] > 1.33 * df.Utilized_Percent.iloc[d - 7])):
                     if ((df.Utilized_Percent.iloc[d] < .67 * mean_percent) or (df.Utilized_Percent.iloc[d] > 1.33 * mean_percent) or (df.Utilized_Total.iloc[c] == "-")):
                         new_array[d] = "Check this"
+                d += 1
             
             j = i
 
-# Adding new_array to the end of the original table
-df['Review'] = new_array
+# # Adding new_array to the end of the original table
+# df['Review'] = new_array
 
-# Writing table to new Excel file
-df.to_excel(r"C:\Users\Ben\Documents\intentiq_example2.xlsx", sheet_name = "sheet1", index = False)
+# # Writing table to new Excel file
+# df.to_excel(r"C:\Users\Ben\Documents\intentiq_example2.xlsx", sheet_name = "sheet1", index = False)
