@@ -7,6 +7,7 @@ from statistics import mean
 
 # Reading in table from Excel
 # Excel table must have correct column titles (Attribute, Utilized_Total, and Utilized_Percent or modify code)
+#if there's a 2nd row of headers->delete
 df = pd.read_excel(r"C:\Users\Ben\Documents\intentiq_example.xls", index_col = None)
 
 # Storing row and column lengths
@@ -14,7 +15,7 @@ row_count = df.shape[0]
 col_count = df.shape[1]
 
 # Adding new column of length row_count
-new_array = np.array([0, 0])
+new_array = np.array(['', ''], np.dtype(('U', 50)))                     #.replace("'", "")
 new_array.resize(row_count, 1)
 
 # Looping through Attribute column
@@ -26,7 +27,7 @@ for i in range(1, len(df.Attribute) - 1):
         else:
             # Calculating avg. total before recent 3 days
             arr_total = np.zeros((i - j - 4), dtype = float)
-            a = j        
+            a = j
             x = 0
             while (a < (i - 4)):
                 np.put(arr_total, [x], df.Utilized_Total.iloc[a])
@@ -41,13 +42,15 @@ for i in range(1, len(df.Attribute) - 1):
                 # Omit missing data from calculation of mean_total
                 if mean(arr_total) > 5000:
                     n = len(arr_total) - 2
-                    for m in range(0, n): #while loop??
+                    for m in range(0, n):
                         if arr_total[m] == 0:
                             arr_total = np.delete(arr_total, (m))
-
                 mean_total = mean(arr_total)
-                print(mean_total)
-                      
+
+            print(mean_total)
+
+            
+            
             # Calculating avg. percent before recent 3 days
             arr_percent = np.zeros((i - j - 4), dtype = float)
             b = j
@@ -56,6 +59,8 @@ for i in range(1, len(df.Attribute) - 1):
                 np.put(arr_percent, [y], df.Utilized_Percent.iloc[b])
                 b += 1
                 y += 1
+
+            print(arr_percent)
 
             if (len(arr_percent) == 0):
                 mean_percent = 0
@@ -66,25 +71,30 @@ for i in range(1, len(df.Attribute) - 1):
                     for o in range(0, p):
                         if arr_percent[o] == 0:
                             arr_percent = np.delete(arr_percent, (o))
-                
-                print(arr_percent)
                 mean_percent = mean(arr_percent)
-                print(mean_percent)
 
+            print(mean_percent)
+
+            
+            
             #if (deviation from 7 days earlier) and (large enough data) -> compare to mean from prev. days/mark if deviates or "-"
             #can make this test mark more to be safe (leave to manual review); make size rule for percent
             c = i - 4
             while (c < i - 1):
-                if ((df.Utilized_Total.iloc[c] < .75 * df.Utilized_Total.iloc[c - 7]) and (df.Utilized_Total.iloc[c] > 1.25 * df.Utilized_Total.iloc[c - 7]) and (mean_total > 10000)):
-                    if ((df.Utilized_Total.iloc[c] < .75 * mean_total) or (df.Utilized_Total.iloc[c] > 1.25 * mean_total) or (df.Utilized_Total.iloc[c] == "-")):
-                        new_array[c] = "Check this"
+                if (((df.Utilized_Total.iloc[c] < .75 * df.Utilized_Total.iloc[c - 7]) or (df.Utilized_Total.iloc[c] > 1.25 * df.Utilized_Total.iloc[c - 7])) and (mean_total > 10000)):
+                    if ((df.Utilized_Total.iloc[c] < (.75 * mean_total)) or (df.Utilized_Total.iloc[c] > 1.25 * mean_total) or (df.Utilized_Total.iloc[c] == "-")):
+                        new_array[c] = 'Check this'
+                print(df.Utilized_Total.iloc[c])
+                print(.75 * mean_total)
+                print(new_array[c])
                 c += 1
 
             d = i - 4
             while (d < i - 1):
-                if ((df.Utilized_Percent.iloc[d] < .67 * df.Utilized_Percent.iloc[d - 7]) and (df.Utilized_Percent.iloc[d] > 1.33 * df.Utilized_Percent.iloc[d - 7])):
+                if ((df.Utilized_Percent.iloc[d] < .67 * df.Utilized_Percent.iloc[d - 7]) or (df.Utilized_Percent.iloc[d] > 1.33 * df.Utilized_Percent.iloc[d - 7])):
                     if ((df.Utilized_Percent.iloc[d] < .67 * mean_percent) or (df.Utilized_Percent.iloc[d] > 1.33 * mean_percent) or (df.Utilized_Total.iloc[c] == "-")):
-                        new_array[d] = "Check this"
+                        new_array[d] = 'Check this'
+                print(df.Utilized_Percent.iloc[d])
                 d += 1
             
 #             print("new array:")
