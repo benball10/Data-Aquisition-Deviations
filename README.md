@@ -1,4 +1,5 @@
 # Program that searches for deviations from normal data aquisition trends
+#?doesn't reach last attribute/manually input any text at bottom?/check manually at end?
 
 import numpy as np
 import pandas as pd
@@ -22,47 +23,53 @@ for i in range(1, len(df.Attribute) - 1):
     if df.Attribute.iloc[i] != df.Attribute.iloc[i - 1]:        
         if i - j < 4:  #change 4 to 10 or 11 bc compaing to 7 days ago?
             j = i
-
         else:
             # Calculating avg. total before recent 3 days
             arr_total = np.zeros((i - j - 4), dtype = float)
-            a = j
-        
+            a = j        
             x = 0
             while (a < (i - 4)):
-                np.put(arr_total, [x], df.Utilized_Total.iloc[a])  #check this! maybe a+1 or a+2
+                np.put(arr_total, [x], df.Utilized_Total.iloc[a])
                 a += 1
                 x += 1
 
-            if mean(arr_total) > 5000:
-#                 n = len(arr_total) - 1
-                for m in range(0, len(arr_total) - 1): #while loop??
-                    if arr_total[m] == 0:
-                        arr_total = np.delete(arr_total, (m))
-                          
             print(arr_total)
-            mean_total = mean(arr_total)
-            print(mean_total)
+            
+            if (len(arr_total) == 0):
+                mean_total = 0
+            else:
+                # Omit missing data from calculation of mean_total
+                if mean(arr_total) > 5000:
+                    n = len(arr_total) - 2
+                    for m in range(0, n): #while loop??
+                        if arr_total[m] == 0:
+                            arr_total = np.delete(arr_total, (m))
+
+                mean_total = mean(arr_total)
+                print(mean_total)
                       
             # Calculating avg. percent before recent 3 days
             arr_percent = np.zeros((i - j - 4), dtype = float)
             b = j
-            
             y = 0
             while (b < (i - 4)):
                 np.put(arr_percent, [y], df.Utilized_Percent.iloc[b])
                 b += 1
                 y += 1
+
+            if (len(arr_percent) == 0):
+                mean_percent = 0
+            else:
+                # Omit missing data from calculation of mean_percent
+                if mean(arr_percent) > 1:
+                    p = len(arr_percent) - 2
+                    for o in range(0, p):
+                        if arr_percent[o] == 0:
+                            arr_percent = np.delete(arr_percent, (o))
                 
-            if mean(arr_percent) > 1:
-                p = len(arr_percent) - 1
-                for o in range(0, p):
-                    if arr_percent[o] == 0:
-                        arr_percent = np.delete(arr_percent, (o))
-                
-            print(arr_percent)
-            mean_percent = mean(arr_percent)
-            print(mean_percent)
+                print(arr_percent)
+                mean_percent = mean(arr_percent)
+                print(mean_percent)
 
             #if (deviation from 7 days earlier) and (large enough data) -> compare to mean from prev. days/mark if deviates or "-"
             #can make this test mark more to be safe (leave to manual review); make size rule for percent
@@ -79,6 +86,9 @@ for i in range(1, len(df.Attribute) - 1):
                     if ((df.Utilized_Percent.iloc[d] < .67 * mean_percent) or (df.Utilized_Percent.iloc[d] > 1.33 * mean_percent) or (df.Utilized_Total.iloc[c] == "-")):
                         new_array[d] = "Check this"
                 d += 1
+            
+#             print("new array:")
+#             print(new_array)
             
             j = i
 
